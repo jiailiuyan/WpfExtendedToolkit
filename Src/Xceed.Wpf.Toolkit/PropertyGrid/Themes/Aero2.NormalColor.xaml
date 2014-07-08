@@ -591,6 +591,7 @@
                         <pg:PropertyItemsControl x:Name="PART_PropertyItemsControl"
                                                  IsTabStop="False"
                                                  Focusable="False"
+                                                 ScrollViewer.CanContentScroll="True" VirtualizingStackPanel.ScrollUnit="Pixel" VirtualizingStackPanel.IsVirtualizingWhenGrouping="True" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                  ItemsSource="{Binding Properties, RelativeSource={RelativeSource TemplatedParent}}"
                                                  ItemContainerStyle="{Binding PropertyContainerStyle, RelativeSource={RelativeSource TemplatedParent}}">
                                     <ItemsControl.ItemsPanel>
@@ -768,6 +769,7 @@
                             <Grid Grid.Row="2" Background="{x:Static SystemColors.WindowBrush}">
                                 <!--<ScrollViewer VerticalScrollBarVisibility="Auto">-->
                                     <pg:PropertyItemsControl  x:Name="PART_PropertyItemsControl" IsTabStop="False" Focusable="False"
+                                                     ScrollViewer.CanContentScroll="True" VirtualizingStackPanel.ScrollUnit="Pixel" VirtualizingStackPanel.IsVirtualizingWhenGrouping="True" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                      ItemsSource="{Binding Properties, RelativeSource={RelativeSource TemplatedParent}}"
                                                      ItemContainerStyle="{Binding PropertyContainerStyle, RelativeSource={RelativeSource TemplatedParent}}"
                                                      Background="{x:Static SystemColors.ControlBrush}"
@@ -788,6 +790,11 @@
 
                                         <ItemsControl.GroupStyle>
                                             <GroupStyle>
+                                            <GroupStyle.Panel>
+                                                <ItemsPanelTemplate>
+                                                    <VirtualizingStackPanel/> 
+                                                </ItemsPanelTemplate>
+                                            </GroupStyle.Panel>
                                                 <GroupStyle.ContainerStyle>
                                                     <Style TargetType="{x:Type GroupItem}">
                                                         <Setter Property="Template">

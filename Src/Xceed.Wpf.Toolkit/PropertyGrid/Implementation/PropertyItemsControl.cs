@@ -32,14 +32,7 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
   {
 
     public PropertyItemsControl()
-    {
-        //this.SetValue(VirtualizingStackPanel.IsVirtualizingProperty, true);
-        //this.SetValue(VirtualizingStackPanel.VirtualizationModeProperty, VirtualizationMode.Recycling);
-#if NET45
-        this.SetValue(VirtualizingStackPanel.ScrollUnitProperty, ScrollUnit.Item);
-        this.SetValue(VirtualizingStackPanel.IsVirtualizingWhenGroupingProperty, true);
-#endif
-    }
+    { }
       
     #region PreparePropertyItemEvent Attached Routed Event
 

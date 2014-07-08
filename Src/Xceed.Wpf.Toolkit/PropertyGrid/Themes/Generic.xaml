@@ -633,11 +633,12 @@
 
                      <Expander x:Name="_propertyExpander" Grid.ColumnSpan="2" Grid.Row="1" IsExpanded="{TemplateBinding IsExpanded}" Style="{StaticResource PropertyExpanderStyle}" IsEnabled="True">
                         <pg:PropertyItemsControl x:Name="PART_PropertyItemsControl" IsTabStop="False" Focusable="False"
+                                                 VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                                                  ItemsSource="{Binding Properties, RelativeSource={RelativeSource TemplatedParent}}"
                                                  ItemContainerStyle="{Binding PropertyContainerStyle, RelativeSource={RelativeSource TemplatedParent}}">
                            <ItemsControl.ItemsPanel>
                               <ItemsPanelTemplate>
-                                 <VirtualizingStackPanel />
+                                 <VirtualizingStackPanel IsVirtualizingWhenGrouping="true" />
                               </ItemsPanelTemplate>
                            </ItemsControl.ItemsPanel>
                         </pg:PropertyItemsControl>
@@ -785,13 +786,14 @@
                      <Grid Grid.Row="2" Background="{x:Static SystemColors.WindowBrush}">
                         
                            <pg:PropertyItemsControl  x:Name="PART_PropertyItemsControl" IsTabStop="False" Focusable="False"
+                                                     VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                                                      ItemsSource="{Binding Properties, RelativeSource={RelativeSource TemplatedParent}}"
                                                      ItemContainerStyle="{Binding PropertyContainerStyle, RelativeSource={RelativeSource TemplatedParent}}"
                                                      Background="{x:Static SystemColors.ControlBrush}"
                                                      VerticalAlignment="Top">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <VirtualizingStackPanel />
+                                            <VirtualizingStackPanel IsVirtualizingWhenGrouping="true" />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
 

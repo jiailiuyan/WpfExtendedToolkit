@@ -309,6 +309,9 @@ namespace Xceed.Wpf.AvalonDock
                 _autoHideWindowManager.HideAutoWindow();
               }
 
+              if( AutoHideWindow != null )
+                AutoHideWindow.Dispose();
+
               foreach (var fw in _fwList.ToArray())
               {
                   //fw.Owner = null;
@@ -382,11 +385,13 @@ namespace Xceed.Wpf.AvalonDock
 
                 newFW.ShowInTaskbar = false;
                 newFW.Show();
+
                 // Do not set the WindowState before showing or it will be lost
                 if( paneForExtensions != null && paneForExtensions.IsMaximized )
                 {
                   newFW.WindowState = WindowState.Maximized;
                 }
+
                 return newFW;
             }
 
@@ -2005,7 +2010,7 @@ namespace Xceed.Wpf.AvalonDock
                 CreateDocumentLayoutItem(documentToImport);
 
             }
-            _suspendLayoutItemCreation = true;
+            _suspendLayoutItemCreation = false;
 
 
             var documentsSourceAsNotifier = documentsSource as INotifyCollectionChanged;
@@ -2164,7 +2169,7 @@ namespace Xceed.Wpf.AvalonDock
                 DocumentClosed( this, evargs );
               }
             }
-        }
+        }        
 
         /// <summary>
         /// Event fired when a document is about to be closed

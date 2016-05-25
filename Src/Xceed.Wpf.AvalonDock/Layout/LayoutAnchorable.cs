@@ -29,6 +29,15 @@ namespace Xceed.Wpf.AvalonDock.Layout
     [Serializable]
     public class LayoutAnchorable : LayoutContent
     {
+        #region CloseWhenTabbedDocument
+        [XmlIgnore]
+        public bool CloseWhenTabbedDocument
+        {
+            get;
+            set;
+        }
+        #endregion
+
         #region IsVisible
         [XmlIgnore]
         public bool IsVisible
@@ -408,6 +417,9 @@ namespace Xceed.Wpf.AvalonDock.Layout
 
 
         #region AutoHide
+
+        public event EventHandler IsAutoHiddenChanged;
+
         public void ToggleAutoHide()
         {
             #region Anchorable is already auto hidden
@@ -545,6 +557,9 @@ namespace Xceed.Wpf.AvalonDock.Layout
                 }
             }
             #endregion
+
+            if (IsAutoHiddenChanged != null)
+                IsAutoHiddenChanged(this, EventArgs.Empty);
         }
 
         #endregion

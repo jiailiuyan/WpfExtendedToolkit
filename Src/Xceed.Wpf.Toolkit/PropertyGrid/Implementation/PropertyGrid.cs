@@ -32,6 +32,7 @@ using System.Collections;
 using Xceed.Wpf.Toolkit.Core.Utilities;
 using System.Reflection;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Windows.Markup;
 
 namespace Xceed.Wpf.Toolkit.PropertyGrid
@@ -196,6 +197,37 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
 
     #endregion //Filter
 
+    #region UseWildcardsInFilter
+
+    public static readonly DependencyProperty UseWildcardsInFilterProperty = DependencyProperty.Register( "UseWildcardsInFilter", typeof( bool ), typeof( PropertyGrid ), new UIPropertyMetadata( false, OnUseWildcardsInFilterPropertyChanged ) );
+    public bool UseWildcardsInFilter
+        {
+      get
+      {
+        return ( bool )GetValue( UseWildcardsInFilterProperty );
+      }
+      set
+      {
+        SetValue( UseWildcardsInFilterProperty, value );
+      }
+    }
+
+    private static void OnUseWildcardsInFilterPropertyChanged( DependencyObject o, DependencyPropertyChangedEventArgs e )
+    {
+      PropertyGrid propertyGrid = o as PropertyGrid;
+      if( propertyGrid != null )
+        propertyGrid.OnUseWildcardsInFilterPropertyChanged( ( bool )e.OldValue, ( bool )e.NewValue );
+    }
+
+    protected virtual void OnUseWildcardsInFilterPropertyChanged( bool oldValue, bool newValue )
+    {
+      // The OnUseWildcardsInFilterPropertyChanged property affects the resulting FilterInfo of IPropertyContainer. Raise an event corresponding
+      // to this property.
+      this.Notify( this.PropertyChanged, () => ( ( IPropertyContainer )this ).FilterInfo );
+    }
+
+    #endregion //UseWildcardsInFilter
+
     #region FilterWatermark
 
     public static readonly DependencyProperty FilterWatermarkProperty = DependencyProperty.Register( "FilterWatermark", typeof( string ), typeof( PropertyGrid ), new UIPropertyMetadata( "Search" ) );
@@ -212,6 +244,23 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
     }
 
     #endregion //FilterWatermark
+
+    #region HideInheritedProperties
+
+    public static readonly DependencyProperty HideInheritedPropertiesProperty = DependencyProperty.Register( "HideInheritedProperties", typeof( bool ), typeof( PropertyGrid ), new UIPropertyMetadata( false ) );
+    public bool HideInheritedProperties
+    {
+      get
+      {
+        return ( bool )GetValue( HideInheritedPropertiesProperty );
+      }
+      set
+      {
+        SetValue( HideInheritedPropertiesProperty, value );
+      }
+    }
+
+    #endregion //HideInheritedProperties
 
     #region IsCategorized
 
@@ -748,6 +797,7 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
       UpdateContainerHelper();
       EditorDefinitions = new EditorDefinitionCollection();
       PropertyDefinitions = new PropertyDefinitionCollection();      
+      this.PropertyValueChanged += this.PropertyGrid_PropertyValueChanged;
 
       AddHandler( PropertyItemBase.ItemSelectionChangedEvent, new RoutedEventHandler( OnItemSelectionChanged ) );
       AddHandler( PropertyItemsControl.PreparePropertyItemEvent, new PropertyItemEventHandler( OnPreparePropertyItemInternal ) );
@@ -797,10 +847,10 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
           && !textBox.AcceptsReturn )
       {
         BindingExpression be = textBox.GetBindingExpression( TextBox.TextProperty );
-        if( be != null )
-          be.UpdateSource();
+          if( be != null )
+            be.UpdateSource();
+        }
       }
-    }
 
     protected override void OnPropertyChanged( DependencyPropertyChangedEventArgs e )
     {
@@ -852,6 +902,24 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
     }
 
 
+    private void PropertyGrid_PropertyValueChanged( object sender, PropertyValueChangedEventArgs e )
+    {
+      var modifiedPropertyItem = e.OriginalSource as PropertyItem;
+      if( modifiedPropertyItem != null )
+      {
+        if( modifiedPropertyItem.WillRefreshPropertyGrid )
+          this.UpdateContainerHelper();
+
+        var parentPropertyItem = modifiedPropertyItem.ParentNode as PropertyItem;
+        if( ( parentPropertyItem != null ) && parentPropertyItem.IsExpandable )
+        {
+          //Rebuild Editor for parent propertyItem if one of its sub-propertyItem have changed.
+          this.RebuildEditor( parentPropertyItem );
+        }
+      }
+    }
+
+
     #endregion //Event Handlers
 
     #region Commands
@@ -869,6 +937,30 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
     #endregion //Commands
 
     #region Methods
+
+
+
+
+
+
+
+
+
+
+
+
+    private void RebuildEditor( PropertyItem propertyItem )
+    {
+      ObjectContainerHelperBase objectContainerHelperBase = propertyItem.ContainerHelper as ObjectContainerHelperBase;
+      //Re-build the editor to update this propertyItem
+      FrameworkElement editor = objectContainerHelperBase.GenerateChildrenEditorElement( propertyItem );
+      if( editor != null )
+      {
+        // Tag the editor as generated to know if we should clear it.
+        ContainerHelperBase.SetIsGenerated( editor, true );
+        propertyItem.Editor = editor;
+      }
+    }
 
     private void UpdateContainerHelper()
     {
@@ -938,6 +1030,24 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
     /// <returns></returns>
     protected virtual Predicate<object> CreateFilter( string filter )
     {
+      if (UseWildcardsInFilter && filter != null)
+      {
+        var s = Regex.Escape(filter);
+        s = s.Replace("\\*", ".*").Replace("\\?", ".");
+        var regEx = new Regex(s, RegexOptions.IgnoreCase);
+          
+        return (item) =>
+        {
+          var property = item as PropertyItem;
+
+          if (property.DisplayName != null)
+          {
+            return regEx.IsMatch(property.DisplayName);
+          }
+          return false;  
+        };
+      }
+
       return null;
     }
 
@@ -948,6 +1058,7 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
     {
       _containerHelper.UpdateValuesFromSource();
     }
+
 
 
 
@@ -1161,6 +1272,14 @@ namespace Xceed.Wpf.Toolkit.PropertyGrid
       get
       {
         return _containerHelper;
+      }
+    }
+
+    bool IPropertyContainer.IsSortedAlphabetically
+    {
+      get
+      {
+        return true;
       }
     }
 

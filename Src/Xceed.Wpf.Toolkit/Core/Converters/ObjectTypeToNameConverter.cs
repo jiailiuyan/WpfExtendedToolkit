@@ -30,7 +30,7 @@ namespace Xceed.Wpf.Toolkit.Core.Converters
          || ( valueString == value.GetType().UnderlyingSystemType.ToString() ) )
         {
           return value.GetType().Name;
-        }
+    }
         return value; 
       }
       return null;

@@ -14,9 +14,19 @@
 
   ***********************************************************************************/
 
-internal static class _XceedVersionInfoCommon
+namespace Xceed.Wpf.Toolkit.PropertyGrid.Editors
 {
-[System.Diagnostics.CodeAnalysis.SuppressMessage( "Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields" )]
-  public const string Build = ".*";
-
+  public class BrushEditor : TypeEditor<ColorBox.ColorBox>
+  {
+    protected override void SetControlProperties()
+    {
+      Editor.BorderThickness = new System.Windows.Thickness( 0 );
+      //Editor.DisplayColorAndName = true;
+      //Editor.Style = PropertyGridUtilities.ColorPickerStyle;
+    }
+    protected override void SetValueDependencyProperty()
+    {
+      ValueProperty = ColorBox.ColorBox.BrushProperty;
+    }
+  }
 }

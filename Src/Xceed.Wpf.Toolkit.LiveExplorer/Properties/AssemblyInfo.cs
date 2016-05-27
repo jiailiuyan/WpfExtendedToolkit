@@ -53,7 +53,6 @@ using System.Windows;
 [assembly: AssemblyFileVersion( "2.7.0.0" )]
 
 #pragma warning disable 1699
-[assembly: AssemblyDelaySign( false )]
-[assembly: AssemblyKeyFile( @"..\..\..\sn.snk" )]
-[assembly: AssemblyKeyName( "" )]
+ 
+ 
 #pragma warning restore 1699
